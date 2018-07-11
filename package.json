@@ -9,7 +9,7 @@
   "author": "Mykola Gutsaliuk",
   "license": "ISC",
   "dependencies": {
-    "mongoose": "^4.13.14",
+    "mongoose": "<=4.13.14",
     "restify": "^7.2.1",
     "restify-validator": "^0.3.1"
   },
