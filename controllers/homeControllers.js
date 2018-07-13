@@ -1,8 +1,10 @@
+// temp lib https://www.npmjs.com/package/ds18x20
 let helper = require('../config/helper.js');
 let RecordModel = require('../model/RecordModel.js');
 
-module.exports = function (server, Gpio) {
-    let LED = new Gpio(4, 'out'); //use GPIO pin 4, and specify that it is output
+
+module.exports = function (server, Gpio, sensor) {
+    let LED = new Gpio(3, 'out'); //use GPIO pin 4, and specify that it is output
     let toggle = false;
     let state = 0;
     server.get("/toggle", function(req, res, next) {
@@ -14,6 +16,24 @@ module.exports = function (server, Gpio) {
         }
         LED.writeSync(state);
             helper.success(res, next, 'toggled '+ toggle);
+    });
+
+    server.get("/getTemp", function(req, res, next) {
+        //check if driver loaded
+        let isLoaded = sensor.isDriverLoaded();
+        //console.log('Driver loaded ' + isLoaded);
+        //list all sensors, one sensor connected to GPIO 4
+        let listOfDeviceIds = sensor.list();
+        //console.log('sensors list ');
+        //console.log(listOfDeviceIds);
+        let temp = sensor.get(listOfDeviceIds[0]);
+        //console.log(temp);
+        let tempObj = {
+            temperature: temp,
+            driverLoaded: isLoaded,
+            sensorList: listOfDeviceIds
+        };
+        helper.success(res, next, tempObj);
     });
 
     server.get("/", function(req, res, next) {
